@@ -1,0 +1,31 @@
+@tailwind base;@tailwind components;@tailwind utilities;
+body{@apply bg-cream text-stone-800 font-sans}
+h1,h2,h3{@apply font-serif text-brand-dark}
+@layer components{.btn{@apply inline-flex items-center justify-center gap-2 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-50}
+.btn2{@apply btn bg-white !text-brand-dark ring-1 ring-stone-300 hover:!bg-brand-light}
+.inp{@apply w-full rounded-xl border border-stone-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20}
+.wrap{@apply mx-auto max-w-7xl px-4 sm:px-6}.card{@apply rounded-2xl bg-white p-4 ring-1 ring-stone-200}}
+
+.marquee{animation:mq 28s linear infinite}@keyframes mq{to{transform:translateX(-50%)}}
+.float{animation:fl 5s ease-in-out infinite}@keyframes fl{50%{transform:translateY(-18px) rotate(6deg)}}
+.noscroll::-webkit-scrollbar{display:none}.noscroll{scrollbar-width:none}
+@media(prefers-reduced-motion:reduce){.marquee,.float{animation:none}}
+
+.kb{animation:kb 22s ease-in-out infinite alternate}@keyframes kb{to{transform:scale(1.1)}}
+.dark body{background:#0b1a11;color:#e6eee8}.dark header{background:rgba(11,26,17,.95)!important}
+.dark .bg-white,.dark .card{background:#12281a}.dark h1,.dark h2,.dark h3{color:#f3efe3}.dark .text-brand-dark{color:#a7e3a0}
+.dark .text-stone-500,.dark .text-stone-600,.dark .text-stone-700{color:#9fb5a5}.dark .bg-brand-light{background:#0f2216}
+.dark .ring-stone-200,.dark .ring-stone-300{--tw-ring-color:#2a4a34}.dark .border-b,.dark .border-t,.dark table *{border-color:#2a4a34}
+.dark .inp{background:#0f2216;border-color:#2a4a34;color:#fff}.dark .btn2{background:#12281a;color:#e6eee8!important}
+.dark .bg-\[\#f1f6ef\]{background:#0b1a11}.dark .text-stone-800{color:#e6eee8}
+
+.kb{animation:kb 18s ease-in-out infinite alternate}@keyframes kb{to{transform:scale(1.1)}}
+.dark body{background:#0c1a11;color:#e4ece6}.dark header{background:#0c1a11!important}
+.dark .bg-white,.dark .card{background:#13261a!important}.dark h1,.dark h2,.dark h3{color:#e9f5e6}
+.dark .text-brand-dark,.dark .text-brand{color:#8fd694}.dark .text-stone-500,.dark .text-stone-600,.dark .text-stone-700{color:#9db3a2}
+.dark .bg-brand-light{background:#10231a}.dark .inp{background:#0f2016;color:#fff;border-color:#2a4a34}
+.dark .btn2{background:#13261a;color:#e9f5e6!important}.dark .ring-stone-200,.dark .ring-stone-300{--tw-ring-color:#2a4a34}
+.dark .border-t,.dark .border-b{border-color:#2a4a34}
+
+html.lenis,html.lenis body{height:auto}.lenis.lenis-smooth{scroll-behavior:auto!important}.lenis-stopped{overflow:hidden}
+@media(min-width:1024px){.offer-bg{background-position:67% 70%!important}}

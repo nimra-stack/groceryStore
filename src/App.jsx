@@ -1,0 +1,42 @@
+import {useEffect,useRef,useState} from 'react';import {Link,NavLink,Route,Routes,useLocation} from 'react-router-dom';
+import {useStore,money,wlabel,line,waLink} from './store';import {EMOJI} from './seed';
+import {initLenis,lenis} from './lenis';import ScrollProgressButton from './ScrollProgressButton';import {Home,Shop,Product,Cart,Checkout,Order,About,Contact} from './Pages';import Admin from './Admin';
+export const Pic=({p,src,cat,cls=''})=>{const s=src||p?.images?.[0];return s?<img src={s} alt={p?.name||''} loading="lazy" className={'object-cover '+cls}/>:<div className={'flex items-center justify-center bg-gradient-to-br from-brand-light to-amber-50 text-5xl '+cls}>{EMOJI[cat||p?.category]||'🛒'}</div>};
+export const Tilt=({children,cls=''})=>{const r=useRef();return <div ref={r} onMouseMove={e=>{const b=r.current.getBoundingClientRect(),x=(e.clientX-b.left)/b.width-.5,y=(e.clientY-b.top)/b.height-.5;r.current.style.transform=`perspective(900px) rotateY(${x*10}deg) rotateX(${-y*10}deg) translateZ(6px)`}} onMouseLeave={()=>r.current.style.transform=''} className={'transition-transform duration-200 will-change-transform '+cls}>{children}</div>};
+export function Card({p}){
+ const {add}=useStore(),[w,setW]=useState(500),out=p.stock<=0;
+ return <Tilt cls="card group flex flex-col hover:shadow-2xl hover:shadow-[#eab308]/25 hover:ring-[#eab308]/60">
+  <div className="relative overflow-hidden rounded-xl"><Link to={'/product/'+p.id} className="block"><Pic p={p} cls="aspect-square w-full transition duration-500 group-hover:scale-105"/>
+  {p.oldPrice>p.price&&<span className="absolute left-2 top-2 rounded-full bg-gold px-2 py-0.5 text-xs font-bold text-white">Sale</span>}</Link><button disabled={out} onClick={()=>add(p,w)} className="absolute inset-x-2 bottom-2 translate-y-[150%] rounded-full bg-[#0f3923]/95 py-2 text-xs font-semibold text-white opacity-0 backdrop-blur transition duration-300 hover:bg-[#eab308] hover:text-[#0f3923] group-hover:translate-y-0 group-hover:opacity-100 disabled:hidden">+ Quick Add ({wlabel(w)})</button></div>
+  <Link to={'/product/'+p.id} className="mt-3 font-semibold leading-tight">{p.name}</Link>
+  <p className="text-xs text-stone-500">{p.category}</p>
+  <div className="mt-1 flex items-baseline gap-2"><b className="text-brand-dark">{money(p.price*w/1000)}</b>{p.oldPrice>p.price&&<s className="text-xs text-stone-400">{money(p.oldPrice*w/1000)}</s>}<span className="text-xs text-stone-500">/ {wlabel(w)}</span></div>
+  <p className={'text-xs font-medium '+(out?'text-red-600':p.stock<10?'text-amber-600':'text-brand')}>{out?'Out of stock':p.stock<10?'Only few left':'In stock'}</p>
+  <div className="mt-3 flex gap-2"><select value={w} onChange={e=>setW(+e.target.value)} className="inp !w-24 !py-2">{[250,500,1000].map(x=><option key={x} value={x}>{wlabel(x)}</option>)}</select>
+  <button disabled={out} onClick={()=>add(p,w)} className="btn flex-1">Add to Cart</button></div></Tilt>}
+const nav=[['/','Home'],['/shop','Shop'],['/categories','Categories'],['/deals','Deals & Offers'],['/dry-fruits','Dry Fruits'],['/about','About Us'],['/contact','Contact Us']];
+function Header(){const [o,setO]=useState(false),{cart}=useStore(),[dk,setDk]=useState(()=>localStorage.theme==='dark'),n=cart.reduce((s,i)=>s+i.q,0);useEffect(()=>{document.documentElement.classList.toggle('dark',dk);localStorage.theme=dk?'dark':'light'},[dk]);
+ return <><header className="sticky top-0 z-40 bg-white shadow-sm">
+ <div className="overflow-hidden bg-brand-dark py-2 text-xs text-white"><div className="marquee flex w-max">{[0,1].map(k=><span key={k} className="flex gap-14 pr-14 whitespace-nowrap"><span>🚚 Free delivery above Rs. 2,500</span><span>🥜 Fresh dry fruits arrived</span><span>💬 Order directly on WhatsApp</span><span>🌿 100% pure & hygienically packed</span><span>🎁 Special offers every week</span></span>)}</div></div>
+ <div className="wrap flex h-16 items-center justify-between">
+  <Link to="/" className="font-serif text-2xl font-bold text-brand-dark">🌿 Fresh<span className="text-gold">Mart</span></Link>
+  <nav className="hidden gap-6 lg:flex">{nav.map(([t,l])=><NavLink key={t} to={t} end={t==='/'} className={({isActive})=>'text-sm font-medium hover:text-brand '+(isActive?'text-brand border-b-2 border-brand':'')}>{l}</NavLink>)}</nav>
+  <div className="flex items-center gap-2"><Link to="/cart" className="btn2 relative !px-4">🛒<span className="hidden sm:inline">Cart</span>{n>0&&<span className="absolute -right-1 -top-1 rounded-full bg-gold px-1.5 text-xs text-white">{n}</span>}</Link>
+  <button onClick={()=>setDk(!dk)} className="btn2 !px-3" aria-label="Toggle theme">{dk?'☀️':'🌙'}</button><button onClick={()=>setO(true)} className="btn2 !px-3 lg:hidden" aria-label="Menu">☰</button></div></div>
+ </header>
+ <div className={'fixed inset-0 z-50 lg:hidden '+(o?'':'pointer-events-none')}><div onClick={()=>setO(false)} className={'absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 '+(o?'opacity-100':'opacity-0')}/>
+ <aside className={'absolute right-0 top-0 flex h-full w-[78%] max-w-xs flex-col bg-gradient-to-b from-brand-dark to-[#0b1f13] p-6 text-white shadow-2xl transition-transform duration-300 '+(o?'translate-x-0':'translate-x-full')}>
+ <div className="flex items-center justify-between"><b className="font-serif text-xl">🌿 Fresh<span className="text-gold">Mart</span></b><button onClick={()=>setO(false)} aria-label="Close" className="h-9 w-9 rounded-full bg-white/10">✕</button></div>
+ <nav className="mt-8 flex-1 space-y-1">{nav.map(([t,l])=><NavLink key={t} to={t} end={t==='/'} onClick={()=>setO(false)} className={({isActive})=>'block rounded-xl px-4 py-3 text-sm font-medium '+(isActive?'bg-white/15 text-gold':'hover:bg-white/10')}>{l}</NavLink>)}</nav>
+ <a target="_blank" href={waLink('Hello FreshMart')} className="btn !bg-gold">💬 Order on WhatsApp</a></aside></div></>}
+const Footer=()=><footer className="relative mt-24 overflow-hidden bg-gradient-to-b from-brand-dark to-[#0f2f1a] text-sm text-green-100"><div className="absolute -top-24 right-0 h-72 w-72 rounded-full bg-gold/10 blur-3xl"/>
+ <div className="wrap relative -mt-0 grid gap-10 py-16 md:grid-cols-4"><div className="md:col-span-1"><h3 className="!text-white text-2xl">🌿 Fresh<span className="text-gold">Mart</span></h3><p className="mt-3 leading-6 opacity-80">Premium daalain, masalay & dry fruits, delivered fresh to your doorstep.</p><a target="_blank" href={waLink('Hello FreshMart')} className="btn !mt-5 !bg-gold">💬 Chat on WhatsApp</a></div>
+ <div><b className="text-white">Shop</b>{nav.slice(1,5).map(([t,l])=><Link key={t} to={t} className="mt-3 block opacity-75 hover:opacity-100 hover:text-gold">{l}</Link>)}</div>
+ <div><b className="text-white">Company</b><Link to="/about" className="mt-3 block opacity-75 hover:text-gold">About Us</Link><Link to="/contact" className="mt-3 block opacity-75 hover:text-gold">Contact Us</Link><Link to="/cart" className="mt-3 block opacity-75 hover:text-gold">My Cart</Link><Link to="/admin" className="mt-3 block opacity-75 hover:text-gold">Admin</Link></div>
+ <div><b className="text-white">Visit us</b><p className="mt-3 leading-7 opacity-80">📍 Gujranwala, Pakistan<br/>📞 +92 300 1234567<br/>🕘 Daily 9am – 10pm</p><p className="mt-3 text-xs opacity-70">We accept: Cash on Delivery • Easypaisa • JazzCash • Bank</p></div></div>
+ <p className="relative border-t border-white/10 py-5 text-center text-xs opacity-70">© {new Date().getFullYear()} FreshMart. All rights reserved.</p></footer>;
+export default function App(){const {pathname}=useLocation();useEffect(()=>initLenis(),[]);useEffect(()=>{lenis?lenis.scrollTo(0,{immediate:true}):scrollTo(0,0)},[pathname]);const admin=pathname.startsWith('/admin');
+ return <>{!admin&&<Header/>}<Routes><Route path="/" element={<Home/>}/><Route path="/shop" element={<Shop title="Shop"/>}/><Route path="/categories" element={<Shop title="Categories" cats/>}/>
+ <Route path="/deals" element={<Shop title="Deals & Offers" deals/>}/><Route path="/dry-fruits" element={<Shop title="Dry Fruits" fixed="Dry Fruits"/>}/>
+ <Route path="/product/:id" element={<Product/>}/><Route path="/cart" element={<Cart/>}/><Route path="/checkout" element={<Checkout/>}/><Route path="/order/:id" element={<Order/>}/>
+ <Route path="/about" element={<About/>}/><Route path="/contact" element={<Contact/>}/><Route path="/admin/*" element={<Admin/>}/></Routes>{!admin&&<Footer/>}{!admin&&<ScrollProgressButton/>}</>}
